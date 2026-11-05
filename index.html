@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>eFootball টুর্নামেন্ট হাব</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#10202b;--card:#183040;--line:#2b4a5e;--chalk:#eef3ee;--mut:#9fb6c2;--gold:#f2b632;--pitch:#1f8a5b;--red:#e5594f}
+*{box-sizing:border-box;margin:0}
+body{font-family:"Hind Siliguri",system-ui,sans-serif;background:var(--bg);color:var(--chalk);line-height:1.5;min-height:100vh;display:flex;flex-direction:column}
+a{color:inherit;text-decoration:none}
+nav{display:flex;gap:4px;align-items:center;flex-wrap:wrap;padding:10px 14px;background:#0b1820;border-bottom:2px solid var(--line);position:sticky;top:0;z-index:5}
+nav b{color:var(--gold);margin-right:auto;font-size:1.1rem}
+nav a{padding:6px 11px;border-radius:6px;font-size:.92rem}
+nav a:hover,nav a.on{background:var(--card);color:var(--gold)}
+main{flex:1;width:100%;max-width:960px;margin:0 auto;padding:18px 14px}
+h1{font-size:2rem;line-height:1.2}h2{font-size:1.3rem;margin:18px 0 10px;color:var(--gold)}h3{font-size:1.05rem}
+.hero{position:relative;text-align:center;padding:42px 12px 34px;border:2px solid var(--chalk);border-radius:10px;overflow:hidden;background:linear-gradient(90deg,transparent 49.7%,rgba(238,243,238,.35) 49.7% 50.3%,transparent 50.3%)}
+.hero:before{content:"";position:absolute;left:50%;top:50%;width:150px;height:150px;border:2px solid rgba(238,243,238,.35);border-radius:50%;transform:translate(-50%,-50%)}
+.hero>*{position:relative}.hero h1{font-size:2.3rem;text-shadow:0 2px 0 var(--bg),0 0 14px var(--bg)}
+.hero p{color:var(--chalk);margin-top:8px;text-shadow:0 0 10px var(--bg),0 0 10px var(--bg)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-top:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;display:block}
+a.card:hover{border-color:var(--gold)}
+.card p,.mut{color:var(--mut);font-size:.9rem}
+.btn{background:var(--gold);color:#1a1405;border:0;border-radius:7px;padding:8px 15px;font:inherit;font-weight:700;cursor:pointer;display:inline-block}
+.btn.g{background:transparent;color:var(--chalk);border:1px solid var(--line)}.btn.r{background:var(--red);color:#fff}.btn.s{padding:4px 10px;font-size:.85rem}
+form label{display:block;margin:10px 0 3px;font-size:.9rem;color:var(--mut)}
+input,select{width:100%;padding:9px 10px;border-radius:7px;border:1px solid var(--line);background:#0b1820;color:var(--chalk);font:inherit}
+input:focus,select:focus,.btn:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.box{max-width:440px;margin:0 auto}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:.92rem;min-width:520px}
+th,td{padding:8px 9px;text-align:center;border-bottom:1px solid var(--line)}
+th{background:#0b1820;color:var(--mut);font-weight:600}td:nth-child(2),th:nth-child(2){text-align:left}
+tr:first-child td{color:var(--gold);font-weight:700}
+.av{width:34px;height:34px;border-radius:50%;object-fit:cover;background:var(--pitch);display:inline-flex;align-items:center;justify-content:center;font-weight:700;vertical-align:middle;margin-right:7px}
+.av.l{width:84px;height:84px;font-size:2rem}
+.fx{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;padding:9px 12px;background:var(--card);border:1px solid var(--line);border-radius:8px;margin-bottom:7px}
+.fx .sc{font-weight:700;font-size:1.15rem;background:#0b1820;border-radius:6px;padding:2px 12px;text-align:center;min-width:70px}
+.fx>:first-child{text-align:right}.fx input{width:50px;text-align:center;padding:5px}
+.tag{font-size:.75rem;padding:2px 9px;border-radius:99px;background:var(--pitch);color:#fff}.tag.d{background:var(--line)}.tag.o{background:var(--gold);color:#1a1405}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row>*{flex:0 0 auto}.row input,.row select{flex:1 1 140px;width:auto}
+.msg{padding:9px 12px;border-radius:7px;margin:10px 0;background:#3b1d1d;border:1px solid var(--red)}.msg.ok{background:#12352a;border-color:var(--pitch)}
+footer{text-align:center;padding:14px;background:#0b1820;border-top:2px solid var(--line);color:var(--gold);font-weight:700;letter-spacing:.06em;font-size:.9rem}
+@media(max-width:520px){h1,.hero h1{font-size:1.6rem}}
+</style>
+</head>
+<body>
+<nav id="nav"></nav>
+<main id="app"></main>
+<footer>DEVELOPED BY M D JAHID</footer>
+<script>
+const K='efb_db',$=s=>document.querySelector(s);
+let db;try{db=JSON.parse(localStorage.getItem(K))}catch(e){}
+db=db||{users:[],ts:[],pass:'admin123',me:null,adm:false};
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(db))}catch(e){alert('সেভ করা যায়নি। ছবির সাইজ বড় হতে পারে।')}};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9);
+const U=id=>db.users.find(u=>u.id===id);
+const T=id=>db.ts.find(t=>t.id===id);
+const me=()=>U(db.me);
+const av=(u,c='')=>!u?'':u.pic?`<img class="av ${c}" src="${u.pic}" alt="">`:`<span class="av ${c}">${esc(u.name[0]||'?')}</span>`;
+const nm=id=>{const u=U(id);return u?esc(u.name):'(মুছে ফেলা)'};
+let flash='';const note=(m,ok)=>{flash=`<div class="msg ${ok?'ok':''}">${m}</div>`};
+const take=()=>{const f=flash;flash='';return f};
+const ST={open:['নিবন্ধন চলছে','o'],live:['চলছে',''],done:['শেষ','d']};
+
+function stand(t){const r={};t.players.forEach(p=>r[p]={p,P:0,W:0,D:0,L:0,GF:0,GA:0,Pts:0});
+t.fx.forEach(f=>{if(!f.d)return;const a=r[f.a],b=r[f.b];if(!a||!b)return;a.P++;b.P++;a.GF+=f.sa;a.GA+=f.sb;b.GF+=f.sb;b.GA+=f.sa;
+if(f.sa>f.sb){a.W++;b.L++;a.Pts+=3}else if(f.sa<f.sb){b.W++;a.L++;b.Pts+=3}else{a.D++;b.D++;a.Pts++;b.Pts++}});
+return Object.values(r).sort((x,y)=>y.Pts-x.Pts||(y.GF-y.GA)-(x.GF-x.GA)||y.GF-x.GF)}
+
+function gen(t){let arr=[...t.players];if(arr.length%2)arr.push(null);const n=arr.length,fx=[];
+for(let r=0;r<n-1;r++){for(let i=0;i<n/2;i++){const a=arr[i],b=arr[n-1-i];if(a&&b)fx.push({id:uid(),r:r+1,a:r%2?b:a,b:r%2?a:b,sa:0,sb:0,d:0})}
+arr=[arr[0],arr[n-1],...arr.slice(1,n-1)]}
+if(t.legs==2){const m=fx.length;for(let i=0;i<m;i++){const f=fx[i];fx.push({id:uid(),r:f.r+n-1,a:f.b,b:f.a,sa:0,sb:0,d:0})}}
+return fx}
+
+function standTbl(t){const s=stand(t);if(!s.length)return'<p class="mut">এখনও কোনো প্লেয়ার নেই।</p>';
+return`<div class="tbl"><table><tr><th>#</th><th>প্লেয়ার</th><th>ম্যাচ</th><th>জয়</th><th>ড্র</th><th>হার</th><th>গোল</th><th>খাওয়া</th><th>GD</th><th>পয়েন্ট</th></tr>
+${s.map((x,i)=>`<tr><td>${i+1}</td><td>${av(U(x.p))}${nm(x.p)}</td><td>${x.P}</td><td>${x.W}</td><td>${x.D}</td><td>${x.L}</td><td>${x.GF}</td><td>${x.GA}</td><td>${x.GF-x.GA}</td><td><b>${x.Pts}</b></td></tr>`).join('')}</table></div>`}
+
+function fixList(t,adm){if(!t.fx.length)return'<p class="mut">ফিকচার এখনও তৈরি হয়নি।</p>';
+const rs=[...new Set(t.fx.map(f=>f.r))];
+return rs.map(r=>`<h3 style="margin:14px 0 6px">রাউন্ড ${r}</h3>`+t.fx.filter(f=>f.r===r).map(f=>adm?
+`<div class="fx"><span>${nm(f.a)}</span><span class="row" style="flex-wrap:nowrap"><input id="a_${f.id}" type="number" min="0" value="${f.d?f.sa:''}" aria-label="স্কোর A"><b>-</b><input id="b_${f.id}" type="number" min="0" value="${f.d?f.sb:''}" aria-label="স্কোর B"></span><span style="text-align:left"><b>${nm(f.b)}</b> <button class="btn s" onclick="setRes('${t.id}','${f.id}')">সেভ</button>${f.d?` <button class="btn s g" onclick="clrRes('${t.id}','${f.id}')">মুছুন</button>`:''}</span></div>`
+:`<div class="fx"><span>${nm(f.a)}</span><span class="sc">${f.d?f.sa+' - '+f.sb:'vs'}</span><span style="text-align:left">${nm(f.b)}</span></div>`).join('')).join('')}
+
+function head(){const m=me(),h=location.hash.slice(1)||'home';
+const L=[['home','হোম'],['tournaments','টুর্নামেন্ট'],['players','প্লেয়ার'],m?['me','আমার প্রোফাইল']:['register','অ্যাকাউন্ট খুলুন'],m?null:['login','লগইন'],['admin','অ্যাডমিন']].filter(Boolean);
+$('#nav').innerHTML=`<b>⚽ eFootball হাব</b>`+L.map(([k,v])=>`<a href="#${k}" class="${h===k?'on':''}">${v}</a>`).join('')}
+
+function R(){head();const h=location.hash.slice(1)||'home',m=me(),A=$('#app');let o='';
+if(h==='home'){o=`<div class="hero"><h1>eFootball টুর্নামেন্ট হাব</h1><p>অ্যাকাউন্ট খুলুন, টুর্নামেন্টে যোগ দিন, ম্যাচ খেলুন এবং পয়েন্ট টেবিলে শীর্ষে উঠুন।</p></div>
+<div class="grid">
+${m?`<a class="card" href="#me"><h3>আমার প্রোফাইল</h3><p>আপনার তথ্য ও পরিসংখ্যান দেখুন।</p></a>`:`<a class="card" href="#register"><h3>প্লেয়ার অ্যাকাউন্ট</h3><p>নাম, ইমেইল, ইউজার আইডি ও ডিভাইস দিয়ে অ্যাকাউন্ট খুলুন।</p></a><a class="card" href="#login"><h3>লগইন</h3><p>আগের অ্যাকাউন্টে ঢুকুন।</p></a>`}
+<a class="card" href="#tournaments"><h3>টুর্নামেন্ট</h3><p>চলমান ও আসন্ন টুর্নামেন্ট, ম্যাচ সূচি ও পয়েন্ট টেবিল।</p></a>
+<a class="card" href="#players"><h3>প্লেয়ার স্ট্যাটস</h3><p>সব প্লেয়ারের জয়, গোল ও পয়েন্ট।</p></a>
+<a class="card" href="#admin"><h3>অ্যাডমিন ড্যাশবোর্ড</h3><p>টুর্নামেন্ট তৈরি, ফিকচার ও রেজাল্ট নিয়ন্ত্রণ।</p></a></div>
+<h2>সাম্প্রতিক টুর্নামেন্ট</h2>${tList(db.ts.slice(-3).reverse())}`}
+else if(h==='register'){o=`<div class="box card"><h1 style="font-size:1.4rem">প্লেয়ার অ্যাকাউন্ট খুলুন</h1>${take()}
+<form onsubmit="return reg(event)"><label>নাম</label><input id="rn" required><label>ইমেইল</label><input id="re" type="email" required>
+<label>পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)</label><input id="rp" type="password" minlength="6" required>
+<label>ইউজার আইডি (ইউনিক)</label><input id="ri" required pattern="[A-Za-z0-9_.\\-]{3,20}" title="৩-২০ অক্ষর: ইংরেজি অক্ষর, সংখ্যা, _ . -">
+<label>ডিভাইসের নাম (যেমন: Redmi Note 12)</label><input id="rd" required>
+<label>ছবি</label><input id="rf" type="file" accept="image/*" required>
+<p style="margin-top:14px"><button class="btn">অ্যাকাউন্ট খুলুন</button></p></form></div>`}
+else if(h==='login'){o=`<div class="box card"><h1 style="font-size:1.4rem">লগইন</h1>${take()}<form onsubmit="return login(event)">
+<label>ইমেইল বা ইউজার আইডি</label><input id="le" required><label>পাসওয়ার্ড</label><input id="lp" type="password" required>
+<p style="margin-top:14px"><button class="btn">লগইন</button></p></form></div>`}
+else if(h==='me'){if(!m){location.hash='login';return}
+const st=pStats(m.id);o=`${take()}<div class="card row">${av(m,'l')}<div style="flex:1"><h1 style="font-size:1.5rem">${esc(m.name)}</h1><p class="mut">ইউজার আইডি: ${esc(m.uid)} · ${esc(m.email)}<br>ডিভাইস: ${esc(m.dev)}</p></div><button class="btn g" onclick="logout()">লগআউট</button></div>
+<h2>আমার পরিসংখ্যান</h2><div class="grid">${[['ম্যাচ',st.P],['জয়',st.W],['ড্র',st.D],['হার',st.L],['গোল',st.GF],['পয়েন্ট',st.Pts]].map(([a,b])=>`<div class="card"><p>${a}</p><h1>${b}</h1></div>`).join('')}</div>
+<h2>আমার টুর্নামেন্ট</h2>${tList(db.ts.filter(t=>t.players.includes(m.id)))}`}
+else if(h==='tournaments'){o=`<h1>টুর্নামেন্ট</h1>${take()}${tList([...db.ts].reverse())}`}
+else if(h==='players'){const ps=db.users.map(u=>({u,...pStats(u.id)})).sort((a,b)=>b.Pts-a.Pts||b.GF-a.GF);
+o=`<h1>প্লেয়ার স্ট্যাটস</h1>`+(ps.length?`<div class="tbl" style="margin-top:12px"><table><tr><th>#</th><th>প্লেয়ার</th><th>ম্যাচ</th><th>জয়</th><th>ড্র</th><th>হার</th><th>গোল</th><th>পয়েন্ট</th></tr>${ps.map((x,i)=>`<tr><td>${i+1}</td><td>${av(x.u)}${esc(x.u.name)} <span class="mut">@${esc(x.u.uid)}</span></td><td>${x.P}</td><td>${x.W}</td><td>${x.D}</td><td>${x.L}</td><td>${x.GF}</td><td><b>${x.Pts}</b></td></tr>`).join('')}</table></div>`:'<p class="mut">এখনও কোনো প্লেয়ার নিবন্ধন করেননি।</p>')}
+else if(h.startsWith('t-')){const t=T(h.slice(2));if(!t){o='<p>টুর্নামেন্ট পাওয়া যায়নি।</p>'}else o=tView(t,m)}
+else if(h==='admin'){o=db.adm?adminView():`<div class="box card"><h1 style="font-size:1.4rem">অ্যাডমিন লগইন</h1>${take()}<form onsubmit="return admLogin(event)"><label>অ্যাডমিন পাসওয়ার্ড</label><input id="ap" type="password" required><p style="margin-top:14px"><button class="btn">প্রবেশ করুন</button></p></form></div>`}
+else if(h.startsWith('adm-')){const t=T(h.slice(4));o=db.adm&&t?admT(t):'<p>অনুমতি নেই বা টুর্নামেন্ট পাওয়া যায়নি।</p>'}
+else o='<p>পেজ পাওয়া যায়নি।</p>';
+A.innerHTML=o}
+
+function tList(l){return l.length?`<div class="grid">${l.map(t=>`<a class="card" href="#t-${t.id}"><h3>${esc(t.name)}</h3><p>${esc(t.date||'')} ${t.prize?'· প্রাইজ: '+esc(t.prize):''}</p><p>${t.players.length} জন প্লেয়ার</p><span class="tag ${ST[t.st][1]}">${ST[t.st][0]}</span></a>`).join('')}</div>`:'<p class="mut" style="margin-top:10px">এখনও কোনো টুর্নামেন্ট নেই।</p>'}
+
+function pStats(id){const s={P:0,W:0,D:0,L:0,GF:0,Pts:0};db.ts.forEach(t=>{const r=stand(t).find(x=>x.p===id);if(r)['P','W','D','L','GF','Pts'].forEach(k=>s[k]+=r[k])});return s}
+
+function tView(t,m){const j=t.players.includes(m?.id);
+return`${take()}<div class="row"><h1 style="flex:1">${esc(t.name)}</h1><span class="tag ${ST[t.st][1]}">${ST[t.st][0]}</span></div>
+<p class="mut">${esc(t.date||'')} ${t.prize?'· প্রাইজ: '+esc(t.prize):''} · ${t.legs==2?'হোম-অ্যাওয়ে (২ লেগ)':'সিঙ্গেল লিগ'}</p>
+${t.st==='open'?(m?(j?'<p style="margin-top:10px"><span class="tag">আপনি যোগ দিয়েছেন</span> <button class="btn s g" onclick="leave(\''+t.id+'\')">বাদ দিন</button></p>':`<p style="margin-top:10px"><button class="btn" onclick="join('${t.id}')">টুর্নামেন্টে যোগ দিন</button></p>`):'<p style="margin-top:10px" class="mut">যোগ দিতে <a href="#login" style="color:var(--gold)">লগইন</a> করুন।</p>'):''}
+<h2>পয়েন্ট টেবিল ও প্লেয়ার স্ট্যাটস</h2>${standTbl(t)}<h2>ম্যাচ সূচি ও ফলাফল</h2>${fixList(t)}`}
+
+function adminView(){return`${take()}<div class="row"><h1 style="flex:1">অ্যাডমিন ড্যাশবোর্ড</h1><button class="btn g" onclick="admOut()">লগআউট</button></div>
+<h2>নতুন টুর্নামেন্ট</h2><form class="card" onsubmit="return mkT(event)"><div class="row"><input id="tn" placeholder="টুর্নামেন্টের নাম" required><input id="td" type="date"><input id="tp" placeholder="প্রাইজ (ঐচ্ছিক)"><select id="tl"><option value="1">সিঙ্গেল লিগ</option><option value="2">হোম-অ্যাওয়ে</option></select><button class="btn">তৈরি করুন</button></div></form>
+<h2>টুর্নামেন্ট তালিকা</h2>${db.ts.length?db.ts.map(t=>`<div class="card row" style="margin-bottom:8px"><div style="flex:1"><h3>${esc(t.name)}</h3><p>${t.players.length} জন · ${t.fx.filter(f=>f.d).length}/${t.fx.length} ম্যাচ শেষ</p></div><a class="btn s" href="#adm-${t.id}">ম্যানেজ</a><button class="btn s r" onclick="delT('${t.id}')">ডিলিট</button></div>`).join(''):'<p class="mut">এখনও কিছু তৈরি হয়নি।</p>'}
+<h2>নিবন্ধিত প্লেয়ার (${db.users.length})</h2>${db.users.map(u=>`<div class="card row" style="margin-bottom:6px;padding:8px 12px"><span style="flex:1">${av(u)}${esc(u.name)} <span class="mut">@${esc(u.uid)} · ${esc(u.email)} · ${esc(u.dev)}</span></span><button class="btn s r" onclick="delU('${u.id}')">মুছুন</button></div>`).join('')||'<p class="mut">কেউ নেই।</p>'}
+<h2>সেটিংস ও ব্যাকআপ</h2><form class="card row" onsubmit="return chPass(event)"><input id="np" type="password" placeholder="নতুন অ্যাডমিন পাসওয়ার্ড" minlength="4" required><button class="btn">পাসওয়ার্ড বদলান</button></form>
+<div class="row" style="margin-top:8px"><button class="btn g" onclick="bak()">ব্যাকআপ ডাউনলোড</button><label class="btn g" style="margin:0">ব্যাকআপ রিস্টোর<input type="file" accept=".json" hidden onchange="rest(event)"></label></div>`}
+
+function admT(t){const free=db.users.filter(u=>!t.players.includes(u.id));
+return`${take()}<a href="#admin" class="mut">← ড্যাশবোর্ড</a><div class="row"><h1 style="flex:1">${esc(t.name)}</h1>
+<select id="ss" style="width:auto" onchange="setSt('${t.id}',this.value)">${Object.entries(ST).map(([k,v])=>`<option value="${k}" ${t.st===k?'selected':''}>${v[0]}</option>`).join('')}</select></div>
+<h2>প্লেয়ার (${t.players.length})</h2><div class="row">${t.players.map(p=>`<span class="card" style="padding:5px 10px">${av(U(p))}${nm(p)} <button class="btn s r" onclick="rmP('${t.id}','${p}')">✕</button></span>`).join('')||'<span class="mut">কেউ নেই</span>'}</div>
+<div class="row" style="margin-top:10px"><select id="ap">${free.map(u=>`<option value="${u.id}">${esc(u.name)} (@${esc(u.uid)})</option>`).join('')||'<option value="">সবাই যুক্ত</option>'}</select><button class="btn" onclick="addP('${t.id}')">প্লেয়ার যোগ করুন</button></div>
+<h2>ফিকচার ও রেজাল্ট</h2><p style="margin-bottom:8px"><button class="btn" onclick="mkFx('${t.id}')">${t.fx.length?'ফিকচার নতুন করে তৈরি':'ফিকচার তৈরি করুন'}</button></p>${fixList(t,1)}
+<h2>স্কোরকার্ড</h2>${standTbl(t)}`}
+
+/* actions */
+function reg(e){e.preventDefault();const g=i=>$('#'+i).value.trim(),em=g('re').toLowerCase(),ui=g('ri');
+if(db.users.some(u=>u.email===em)){note('এই ইমেইল দিয়ে আগেই অ্যাকাউন্ট খোলা হয়েছে।');R();return false}
+if(db.users.some(u=>u.uid.toLowerCase()===ui.toLowerCase())){note('এই ইউজার আইডি আগে থেকেই আছে। অন্য আইডি দিন।');R();return false}
+const f=$('#rf').files[0],im=new Image(),rd=new FileReader();
+rd.onload=()=>{im.onload=()=>{const c=document.createElement('canvas'),s=Math.min(1,160/Math.max(im.width,im.height));c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+const u={id:uid(),name:g('rn'),email:em,pass:$('#rp').value,uid:ui,dev:g('rd'),pic:c.toDataURL('image/jpeg',.7)};db.users.push(u);db.me=u.id;save();note('অ্যাকাউন্ট তৈরি হয়েছে। স্বাগতম!',1);location.hash='me';R()};im.src=rd.result};rd.readAsDataURL(f);return false}
+function login(e){e.preventDefault();const k=$('#le').value.trim().toLowerCase(),u=db.users.find(u=>(u.email===k||u.uid.toLowerCase()===k)&&u.pass===$('#lp').value);
+if(!u){note('ইমেইল/ইউজার আইডি বা পাসওয়ার্ড ভুল।');R();return false}db.me=u.id;save();location.hash='me';R();return false}
+function logout(){db.me=null;save();location.hash='home';R()}
+function join(id){const t=T(id);if(!t.players.includes(db.me)){t.players.push(db.me);save()}note('আপনি টুর্নামেন্টে যোগ দিয়েছেন।',1);R()}
+function leave(id){const t=T(id);t.players=t.players.filter(p=>p!==db.me);save();R()}
+function admLogin(e){e.preventDefault();if($('#ap').value===db.pass){db.adm=true;save()}else note('পাসওয়ার্ড ভুল।');R();return false}
+function admOut(){db.adm=false;save();R()}
+function mkT(e){e.preventDefault();db.ts.push({id:uid(),name:$('#tn').value.trim(),date:$('#td').value,prize:$('#tp').value.trim(),legs:+$('#tl').value,st:'open',players:[],fx:[]});save();note('টুর্নামেন্ট তৈরি হয়েছে।',1);R();return false}
+function delT(id){if(confirm('টুর্নামেন্টটি স্থায়ীভাবে মুছে যাবে। নিশ্চিত?')){db.ts=db.ts.filter(t=>t.id!==id);save();R()}}
+function delU(id){if(confirm('প্লেয়ারকে মুছে ফেলবেন?')){db.users=db.users.filter(u=>u.id!==id);db.ts.forEach(t=>{t.players=t.players.filter(p=>p!==id);t.fx=t.fx.filter(f=>f.a!==id&&f.b!==id)});if(db.me===id)db.me=null;save();R()}}
+function setSt(id,v){T(id).st=v;save();note('স্ট্যাটাস আপডেট হয়েছে।',1);R()}
+function addP(id){const v=$('#ap').value;if(v){T(id).players.push(v);save();R()}}
+function rmP(id,p){const t=T(id);if(t.fx.length&&!confirm('প্লেয়ার বাদ দিলে তার ম্যাচগুলোও মুছে যাবে। নিশ্চিত?'))return;t.players=t.players.filter(x=>x!==p);t.fx=t.fx.filter(f=>f.a!==p&&f.b!==p);save();R()}
+function mkFx(id){const t=T(id);if(t.players.length<2){note('ফিকচারের জন্য কমপক্ষে ২ জন প্লেয়ার লাগবে।');R();return}
+if(t.fx.length&&!confirm('আগের সব ফিকচার ও রেজাল্ট মুছে নতুন তৈরি হবে। নিশ্চিত?'))return;t.fx=gen(t);if(t.st==='open')t.st='live';save();note('ফিকচার তৈরি হয়েছে।',1);R()}
+function setRes(tid,fid){const f=T(tid).fx.find(x=>x.id===fid),a=$('#a_'+fid).value,b=$('#b_'+fid).value;
+if(a===''||b===''||a<0||b<0){alert('দুটি স্কোরই দিন।');return}f.sa=+a;f.sb=+b;f.d=1;save();note('রেজাল্ট সেভ হয়েছে। স্কোরকার্ড আপডেট হয়েছে।',1);R()}
+function clrRes(tid,fid){const f=T(tid).fx.find(x=>x.id===fid);f.sa=f.sb=0;f.d=0;save();R()}
+function chPass(e){e.preventDefault();db.pass=$('#np').value;save();note('পাসওয়ার্ড বদলানো হয়েছে।',1);R();return false}
+function bak(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:'application/json'}));a.download='efootball-backup.json';a.click()}
+function rest(e){const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.users||!d.ts)throw 0;db=d;db.adm=true;save();note('ব্যাকআপ রিস্টোর হয়েছে।',1)}catch(x){note('ফাইলটি সঠিক নয়।')}R()};r.readAsText(e.target.files[0])}
+
+window.onhashchange=()=>{flash='';R()};R();
+</script>
+</body>
+</html>
